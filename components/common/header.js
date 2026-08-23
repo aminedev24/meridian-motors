@@ -178,7 +178,7 @@ const Header = () => {
       <div className="header-container px-2 sm:px-4 lg:px-6">
         <header className="main-header header">
           <div className="header-top flex items-center gap-2">
-            <div className="menu-logo-container flex items-center gap-3">
+            <div className="menu-logo-container flex shrink-0 items-center gap-3">
               <Link className="logo flex items-center shrink-0" href="/">
                 <ImageWithLoader
                   src="/images/logo-meridian-dark.svg"
@@ -190,14 +190,14 @@ const Header = () => {
 
             {/* Mobile Search Input - always rendered, .mobile-only in CSS
                 shows/hides it so it's correct on first paint, no JS gate */}
-            <div className="header-search mobile-only relative flex items-center gap-2 px-4 py-2 text-sm flex-1">
+            <div className="header-search mobile-only relative flex min-w-0 flex-1 items-center gap-2 px-4 py-2 text-sm">
               <input
                 type="text"
                 placeholder="Search by keyword..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="w-full bg-transparent text-sm outline-none"
+                className="w-full min-w-0 bg-transparent text-sm outline-none"
               />
               <i className="fas fa-search search-icon" onClick={handleSearch}></i>
             </div>
@@ -243,7 +243,7 @@ const Header = () => {
                 and display:flex under the mobile breakpoint in CSS, so this
                 doesn't need a JS viewport gate either */}
             <div
-              className="menu-toggle flex h-10 w-10 items-center justify-center rounded-md border border-brand-navy/20 text-xl text-brand-navy"
+              className="menu-toggle flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-brand-navy/20 text-xl text-brand-navy"
               role="button"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileMenuOpen}
