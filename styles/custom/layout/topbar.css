@@ -7,24 +7,26 @@
   visibility: hidden;
 }
 .top-bar {
-    padding: 3px 10px;  /* Reduced padding */
+    padding: 6px 16px;
     display: flex;
     justify-content: space-around;
     align-items: center;
     color: #fff;
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
 
 }
 
 .app-info .app-name {
     font-weight: bold;
     color: #fff;
-    margin-right: 15px;  /* Reduced space */
+    margin-right: 15px;
 }
 
 .extra-info {
     display: flex;
     align-items: center;  /* Align items vertically centered */
-    gap: 10px;  /* Reduced gap */
+    gap: 12px;
 }
 
 .extra-info .time,
@@ -68,9 +70,10 @@
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
-    padding: 5px;
+    padding: 5px 10px;
     gap: 5px;
     color: var(--primary-color);
+    font-size: 0.72rem;
   }
 
   .extra-info .time,
@@ -87,9 +90,10 @@
     flex-direction: row;
     text-align: center;
     width: auto;
+    margin: 0; /* reset any legacy negative margins */
     flex-wrap: nowrap;
     justify-content: center;
-    gap: 25px;
+    gap: 18px;
   }
 
   .stock {

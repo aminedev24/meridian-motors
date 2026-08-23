@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -67,6 +67,7 @@ const allTopics = topicGroups.flatMap((group) => group.topics);
 export default function HelpPage({ initialSlug }) {
   const router = useRouter();
   const { topic: topicParam } = router.query;
+  const [topicsOpen, setTopicsOpen] = useState(false);
 
   const slug = useMemo(
     () => (topicParam || initialSlug || 'help').toString().toLowerCase(),
@@ -99,31 +100,57 @@ export default function HelpPage({ initialSlug }) {
           </h1>
         )}
 
-        <div className="flex flex-col gap-8 md:flex-row md:gap-10">
-          <nav className="shrink-0 md:w-56">
-            {topicGroups.map((group) => (
-              <div key={group.label} className="mb-6">
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  {group.label}
-                </p>
-                <ul className="space-y-1">
-                  {group.topics.map((topic) => (
-                    <li key={topic.slug}>
-                      <Link
-                        href={`/help/${topic.slug}`}
-                        className={`block px-2 py-1.5 text-sm transition ${
-                          slug === topic.slug
-                            ? 'font-bold text-brand-orange'
-                            : 'text-gray-600 hover:text-brand-navy'
-                        }`}
-                      >
-                        {topic.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+        <div className="flex flex-col gap-6 md:flex-row md:gap-10">
+          <nav aria-label="Help topics" className="shrink-0 md:w-56 md:self-start md:sticky md:top-28">
+            {/* Mobile: hamburger toggle */}
+            <button
+              type="button"
+              onClick={() => setTopicsOpen((v) => !v)}
+              aria-expanded={topicsOpen}
+              aria-controls="help-topics-panel"
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--border-color)] bg-[var(--white)] px-4 py-3 text-sm font-bold text-[var(--text-color)] transition hover:border-brand-orange/50 md:hidden"
+            >
+              <span className="inline-flex items-center gap-2.5">
+                <i className="fas fa-bars text-brand-orange" aria-hidden="true"></i>
+                Help Topics
+              </span>
+              <i
+                className={`fas fa-chevron-down text-xs text-gray-400 transition-transform ${topicsOpen ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              ></i>
+            </button>
+
+            {/* Collapsible on mobile, static sidebar on desktop */}
+            <div
+              id="help-topics-panel"
+              className={`${topicsOpen ? 'mt-3 block' : 'hidden'} rounded-lg border border-[var(--border-color)] bg-[var(--white)] p-4 md:mt-0 md:block md:rounded-none md:border-0 md:bg-transparent md:p-0`}
+            >
+              {topicGroups.map((group) => (
+                <div key={group.label} className="mb-5 last:mb-0 md:mb-6">
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    {group.label}
+                  </p>
+                  <ul className="space-y-1">
+                    {group.topics.map((topic) => (
+                      <li key={topic.slug}>
+                        <Link
+                          href={`/help/${topic.slug}`}
+                          aria-current={slug === topic.slug ? 'page' : undefined}
+                          onClick={() => setTopicsOpen(false)}
+                          className={`block rounded px-2 py-2 text-sm transition md:py-1.5 ${
+                            slug === topic.slug
+                              ? 'font-bold text-brand-orange'
+                              : 'text-gray-600 hover:text-brand-navy'
+                          }`}
+                        >
+                          {topic.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </nav>
 
           <div className="min-w-0 flex-1">

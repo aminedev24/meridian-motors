@@ -72,15 +72,6 @@ const AuctionLanding = () => {
         </div>
       </Section>
 
-      <Section tone="navy" id="live-access" className="text-center">
-        <h2 className="text-2xl font-semibold mb-4">Are You Familiar with Bidding by Yourself?</h2>
-        <p className="max-w-xl mx-auto opacity-90 mb-6">
-          Get direct access to our auctions platform and start buying straight from the source.
-        </p>
-        <Button variant="accent" href="https://auc.artisbay.com" target="_blank">
-          Subscribe to Auctions
-        </Button>
-      </Section>
 
       <Section tone="light">
         <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">

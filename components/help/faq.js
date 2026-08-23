@@ -29,13 +29,16 @@ const FAQComponent = () => {
         </select>
       </div>
       */}
-      {/* FAQ list */}
+      {/* FAQ list - native details/summary keeps it accessible & tap-friendly */}
       <div className="faq-list">
         {currentFAQ.questions.map((item, index) => (
-          <div className="faq-item" key={index}>
-            <h4 className="faq-question">{item.question}</h4>
+          <details className="faq-item" key={index} open={index === 0}>
+            <summary className="faq-question">
+              {item.question}
+              <span className="faq-chevron" aria-hidden="true"></span>
+            </summary>
             <p className="faq-answer">{item.answer}</p>
-          </div>
+          </details>
         ))}
       </div>
     </div>

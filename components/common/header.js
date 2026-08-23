@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Fragment } from 'react';
 //import { usePathname, useRouter } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { useUser } from '../user/userContext';
@@ -18,15 +18,27 @@ const Header = () => {
 
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Track mobile menu state
+  const [isScrolled, setIsScrolled] = useState(false);
   const dropdownRefs = useRef({});
   const headerRef = useRef(null);
   const { user, logout } = useUser();
   const router = useRouter();
-  const pathname = router.pathname; 
+  const pathname = router.pathname;
+
+  const isActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
+  const auctionActive = auctionLinks.some((link) => isActive(link.path));
+  const helpActive = helpLinks.some((link) => isActive(link.path));
 
   const toggleDropdown = (dropdownName) => {
     setActiveDropdown((prev) => (prev === dropdownName ? null : dropdownName));
   };
+
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleClickOutside = useCallback((event) => {
     if (
@@ -144,6 +156,14 @@ const Header = () => {
   // hamburger is tapped open.
   const mobileMenuClass = isMobileMenuOpen ? 'mobile-menu-open' : '';
 
+  // Lock page scroll while the mobile menu overlay is open so the page
+  // behind the panel can't scroll underneath it.
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.body.classList.toggle('mobile-nav-open', isMobileMenuOpen);
+    return () => document.body.classList.remove('mobile-nav-open');
+  }, [isMobileMenuOpen]);
+
   const renderGuestAuth = () => (
     <div className="header-item signin-item">
       <div className="flex items-center gap-2">
@@ -172,8 +192,26 @@ const Header = () => {
     </div>
   );
 
+  const renderDropdownItems = (links) =>
+    links.map((link) => (
+      <Fragment key={`${link.group || ''}-${link.text}`}>
+        {link.group && <p className="dropdown-group">{link.group}</p>}
+        <Link
+          href={link.path}
+          className={`dropdown-link${isActive(link.path.split('#')[0]) ? ' current' : ''}`}
+          aria-current={isActive(link.path.split('#')[0]) ? 'page' : undefined}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <span className="dropdown-link-text">
+            <span className="dropdown-link-title">{link.text}</span>
+            {link.desc && <small className="dropdown-link-desc">{link.desc}</small>}
+          </span>
+        </Link>
+      </Fragment>
+    ));
+
   return (
-    <div className="header-wrapper" ref={headerRef}>
+    <div className={`header-wrapper${isScrolled ? ' is-scrolled' : ''}`} ref={headerRef}>
       <TopBar />
       <div className="header-container px-2 sm:px-4 lg:px-6">
         <header className="main-header header">
@@ -190,7 +228,7 @@ const Header = () => {
 
             {/* Mobile Search Input - always rendered, .mobile-only in CSS
                 shows/hides it so it's correct on first paint, no JS gate */}
-            <div className="header-search mobile-only relative flex min-w-0 flex-1 items-center gap-2 px-4 py-2 text-sm">
+            <div role="search" aria-label="Search stock by keyword" className="header-search mobile-only relative flex min-w-0 flex-1 items-center gap-2 px-4 py-2 text-sm">
               <input
                 type="text"
                 placeholder="Search by keyword..."
@@ -203,7 +241,7 @@ const Header = () => {
             </div>
 
             <div className="header-main-row desktop-only">
-              <div className="header-search relative flex items-center gap-2 px-4 py-2 text-sm">
+              <div role="search" aria-label="Search stock by keyword" className="header-search relative flex items-center gap-2 px-4 py-2 text-sm">
                 <input
                   type="text"
                   placeholder="Search by keyword..."
@@ -242,34 +280,38 @@ const Header = () => {
             {/* Mobile Menu Toggle - .menu-toggle is display:none by default
                 and display:flex under the mobile breakpoint in CSS, so this
                 doesn't need a JS viewport gate either */}
-            <div
+            <button
+              type="button"
               className="menu-toggle flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-brand-navy/20 text-xl text-brand-navy"
-              role="button"
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+                setActiveDropdown(null);
+              }}
             >
               {isMobileMenuOpen ? (
                 <i className="fas fa-times"></i>
               ) : (
                 <i className="fas fa-bars"></i>
               )}
-            </div>
+            </button>
           </div>
 
           <nav
-            className="header-icons header-buttons-row mobile-actions md:mt-2 md:mb-2 flex w-full flex-wrap items-center gap-4 text-sm text-brand-navy md:w-auto md:justify-start"
+            className="header-icons mobile-actions flex w-full items-center text-sm text-brand-navy"
             aria-label="Mobile quick actions"
           >
-            <ul className="flex w-full flex-wrap items-center justify-center gap-4 list-none p-0 m-0">
+            <ul className="scrollbar-hide m-0 flex w-full list-none items-center p-0">
               <li className="header-item flex items-center gap-2">
-                <Link href="/contact">Contact</Link>
+                <Link href="/contact" aria-current={isActive('/contact') ? 'page' : undefined}>
+                  <i className="fas fa-headset"></i> Contact
+                </Link>
               </li>
               <li className="header-item flex items-center gap-2">
-                <Link href="/stock-list">Browse Stock</Link>
-              </li>
-              <li className="header-item flex items-center gap-2">
-                <Link href="/shipping">Shipping</Link>
+                <Link href="/stock-list" aria-current={isActive('/stock-list') ? 'page' : undefined}>
+                  <i className="fas fa-warehouse"></i> Browse Stock
+                </Link>
               </li>
 
               {!user ? (
@@ -306,7 +348,12 @@ const Header = () => {
         >
           <ul className="left-links flex flex-col gap-4 md:flex-row md:items-center">
             <li className="flex items-center gap-2">
-              <Link className="flex flex-col md:flex-row items-center" href="/stock-list" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link
+                className="flex flex-col md:flex-row items-center"
+                href="/stock-list"
+                aria-current={isActive('/stock-list') ? 'page' : undefined}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 <i className="fas fa-warehouse icon"></i>
                 Browse Stock
               </Link>
@@ -314,7 +361,7 @@ const Header = () => {
 
             {/* Auction Dropdown */}
             <li
-              className="nav-item dropdown flex items-center gap-2"
+              className={`nav-item dropdown flex items-center gap-2${auctionActive ? ' is-active' : ''}`}
               ref={(el) => (dropdownRefs.current['auction'] = el)}
               onClick={() => toggleDropdown('auction')}
             >
@@ -325,9 +372,10 @@ const Header = () => {
                   activeDropdown === 'auction' ? 'show' : ''
                 }`}
               >
-                {auctionLinks.map((link) => (
-                  <Link key={link.path} href={link.path} onClick={() => setIsMobileMenuOpen(false)}>{link.text}</Link>
-                ))}
+                {renderDropdownItems(auctionLinks)}
+                <Link href="/contact" className="dropdown-cta">
+                  Ask about an auction car
+                </Link>
               </div>
             </li>
           </ul>
@@ -336,19 +384,21 @@ const Header = () => {
 
             {/* Help Dropdown */}
             <li
-              className="nav-item dropdown flex items-center gap-2"
+              className={`nav-item dropdown flex items-center gap-2${helpActive ? ' is-active' : ''}`}
               ref={(el) => (dropdownRefs.current['overview'] = el)}
               onClick={() => toggleDropdown('overview')}
             >
+              <i className="fas fa-circle-question icon"></i>
               Help <span className="arrow">▼</span>
               <div
                 className={`dropdown-content help ${
                   activeDropdown === 'overview' ? 'show' : ''
                 }`}
               >
-                {helpLinks.map((link) => (
-                  <Link key={link.path} href={link.path}>{link.text}</Link>
-                ))}
+                {renderDropdownItems(helpLinks)}
+                <Link href="/contact" className="dropdown-cta">
+                  More questions? Contact us
+                </Link>
               </div>
             </li>
           </ul>

@@ -1,10 +1,36 @@
 .terms-container ,.asf, .whyChoose, .overview , .envirement-policy, .paypal, .howtopay {
-    line-height: 1.6;
-    color: #333;
-    padding: 10px;
-    margin: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow-x:hidden ;
+    line-height: 1.65;
+    color: var(--text-color);
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: clamp(16px, 3vw, 28px);
+    margin: 0 auto 24px;
+    max-width: 900px;
+    box-shadow: 0 2px 10px rgba(2, 8, 20, 0.06);
+    overflow-x: hidden;
+  }
+
+  /* Media inside topic content never overflows its card */
+  .terms-container img, .asf img, .whyChoose img, .overview img,
+  .envirement-policy img, .paypal img, .howtopay img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Long values (emails, IBANs, SWIFT codes) wrap instead of forcing scroll */
+  .terms-container p, .terms-container li,
+  .asf p, .asf li,
+  .whyChoose p, .whyChoose li,
+  .envirement-policy p,
+  .paypal p, .paypal li,
+  .howtopay p, .howtopay li {
+    overflow-wrap: anywhere;
+  }
+
+  .terms-container table,
+  .asf table, .whyChoose table, .paypal table, .howtopay table {
+    max-width: 100%;
   }
 
   .terms-container h1, .asf h1, .whyChoose h1, .overview h1, .pypal h1, .howtopay h1 {
@@ -20,7 +46,7 @@
 
   .terms-container p, .asf p , .whyChoose p , .overview p , .envirement-policy p, .paypal p, .howtopay p {
     margin-bottom: 10px;
-    padding: 0 20px;
+    padding: 0;
   }
 
   .terms-container ul, .asf ul, .whyChoose ul, .paypal ul , .howtopay ul {
@@ -177,4 +203,41 @@
 
 .success {
   text-align: center;
+}
+
+/* ---- Mobile: tighten legal/topic content ---- */
+@media (max-width: 640px) {
+  .terms-container ,.asf, .whyChoose, .overview , .envirement-policy, .paypal, .howtopay {
+    padding: 14px 12px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+  }
+
+  .terms-container h1, .asf h1, .whyChoose h1, .overview h1, .pypal h1, .howtopay h1,
+  .envirement-policy h1 {
+    font-size: 1.35rem;
+    margin-bottom: 14px;
+  }
+
+  .terms-container h2 , .asf h2 , .whyChoose h2 ,.envirement-policy h2 , .paypal h2, .howtopay h2 {
+    margin-top: 18px;
+    margin-bottom: 8px;
+    font-size: 1.15rem;
+  }
+
+  .terms-container ul li, .terms-container ol li, .asf ul li ,
+  .whyChoose ul li, .whyChoose ol li, .paypal ul li , .paypal ol li ,
+  .howtopay ul li, .howtopay ol li {
+    margin-left: 18px;
+  }
+
+  .cta-container {
+    padding: 14px;
+  }
+
+  .cta-btn {
+    width: 100%;
+    max-width: 320px;
+    min-height: 46px;
+  }
 }

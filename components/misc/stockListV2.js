@@ -762,6 +762,24 @@ const StocklistV2 = () => {
 
   const skeletonCount = Math.min(itemsPerPage, 8);
 
+  // Shared by the desktop segmented control and the mobile 2x2 grid so both
+  // stay visually identical while each gets size-appropriate padding.
+  const sortOptionButtons = sortSelections.map((s) => (
+    <button
+      key={s.value}
+      type="button"
+      onClick={() => setSortOption(s.value)}
+      aria-pressed={sortOption === s.value}
+      className={`whitespace-nowrap rounded px-2 py-2 text-center text-xs font-semibold transition sm:px-3 sm:py-1.5 ${
+        sortOption === s.value
+          ? "bg-white text-brand-charcoal shadow-sm"
+          : "text-gray-600 hover:text-brand-charcoal"
+      }`}
+    >
+      {s.label}
+    </button>
+  ));
+
   return (
     <div className="min-h-screen bg-gray-50 py-6">
       <div className="mx-auto w-full max-w-[1440px] px-4">
@@ -801,7 +819,7 @@ const StocklistV2 = () => {
             </div>
 
             {/* Controls bar */}
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3.5 py-2 shadow-sm">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-gray-200 bg-white px-3.5 py-2 shadow-sm">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <FontAwesomeIcon icon={faCarSide} className="h-4 w-4 text-brand-navy" />
                 <span>
@@ -835,25 +853,17 @@ const StocklistV2 = () => {
                     </button>
                   ))}
                 </div>
+                {/* Desktop/tablet sort: inline segmented control */}
                 <span className="hidden text-xs font-semibold uppercase tracking-wider text-gray-400 sm:inline">
                   Sort
                 </span>
-                <div className="flex items-center gap-1 rounded-md border border-gray-200 bg-gray-100 p-1">
-                  {sortSelections.map((s) => (
-                    <button
-                      key={s.value}
-                      type="button"
-                      onClick={() => setSortOption(s.value)}
-                      className={`rounded px-3 py-1.5 text-xs font-semibold transition ${
-                        sortOption === s.value
-                          ? "bg-white text-brand-charcoal shadow-sm"
-                          : "text-gray-600 hover:text-brand-charcoal"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
+                <div className="hidden items-center gap-1 rounded-md border border-gray-200 bg-gray-100 p-1 sm:flex">
+                  {sortOptionButtons}
                 </div>
+              </div>
+              {/* Mobile sort: full-width 2x2 grid instead of a squeezed row */}
+              <div className="grid w-full grid-cols-2 gap-1 rounded-md border border-gray-200 bg-gray-100 p-1 sm:hidden">
+                {sortOptionButtons}
               </div>
             </div>
 

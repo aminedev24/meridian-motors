@@ -154,3 +154,53 @@
   }
 
 }
+
+/* ---- Phones ---- */
+@media screen and (max-width:640px){
+  .howToBuy-wrapper {
+    padding: 12px;
+  }
+
+  .howToBuy-container {
+    padding: 20px 4px;
+  }
+
+  .intro-text {
+    margin-bottom: 24px;
+    padding: 0 8px;
+  }
+
+  /* Overview icons become a tidy 2x2 grid instead of a squeezed row */
+  .overview-icons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    gap: 22px 10px;
+    margin-bottom: 28px;
+    padding: 0;
+  }
+
+  .steps {
+    gap: 28px;
+  }
+
+  .step-text {
+    padding-right: 0;
+  }
+
+  .step-image img {
+    max-width: 240px;
+  }
+
+  /* Full-width, thumb-friendly CTA */
+  .cta-button {
+    width: 100%;
+    max-width: 320px;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .sub-text h4 {
+    padding: 0 12px;
+  }
+}

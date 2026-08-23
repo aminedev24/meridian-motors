@@ -80,7 +80,10 @@ select, input[type='date']{
 }
 
 body {
-  overflow-x:hidden ;
+  /* overflow-x:clip (unlike hidden) does not create a scroll container,
+     which would break position:sticky on the header */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .header-container{
@@ -118,10 +121,6 @@ body {
         max-width: 1730px;
         width: 90%;
         margin: 0 auto;
-    }
-
-    .extra-info {
-        margin: 0 -89px;
     }
 
 

@@ -1,106 +1,58 @@
-.footer-container {
+/* Minimal single-bar footer */
 
-  width: 100%;
-}
-
-.footer {
+.site-footer {
   background-color: var(--charcoal-color);
-  color: white;
-  padding: 20px;
-  text-align: center;
-}
-
-
-.info h4 {
+  border-top: 2px solid var(--accent-color);
   color: #fff;
+  padding: 20px 24px 16px;
 }
 
-.footer-upper {
-  background-color: var(--primary-color);
-  border-top: 3px solid var(--accent-color);
-  color: white;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.footer-upper img {
-  margin-right: 20px;
-}
-
-.footer-inner {
-  width: 100%;
+.footer-minimal {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
   display: flex;
-  align-items: flex-start;
-  gap: 40px;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-}
-
-.footer-inner .info {
-  flex: 1 1 260px;
+  gap: 14px 32px;
 }
 
 .footer-logo {
-  width: 120px;
+  width: 120px !important;
   max-width: 100%;
 }
-.header .info {
-  line-height: 1.6;
-}
 
-.footer-upper a {
-  color: inherit;
-}
-
-.footer-sitemap,
-.footer-trust {
-  flex: 1 1 200px;
-}
-
-.footer-sitemap h4,
-.footer-trust h4 {
-  color: #fff;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 12px;
-  opacity: 0.85;
-}
-
-.footer-sitemap ul,
-.footer-trust ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.footer-links {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
 }
 
-.footer-sitemap a {
+.footer-links a {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.82);
   transition: color 0.2s ease;
 }
 
-.footer-sitemap a:hover {
+.footer-links a:hover {
   color: var(--accent-color);
 }
 
-.footer-trust li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+.footer-copy {
+  max-width: 1280px;
+  margin: 14px auto 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
 }
 
-.footer-trust-icon {
-  color: var(--accent-color);
-  flex-shrink: 0;
+@media (max-width: 640px) {
+  .footer-minimal {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
 }
-
-
