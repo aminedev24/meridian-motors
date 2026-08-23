@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" width="1000" height="200">
-  <defs>
-    <pattern id="wm" width="220" height="40" patternUnits="userSpaceOnUse">
-      <text x="0" y="28" font-family="Arial, sans-serif" font-size="16" fill="#000000" fill-opacity="0.06">Meridian Motors.</text>
-    </pattern>
-  </defs>
-  <rect width="1000" height="200" fill="url(#wm)" />
-</svg>
