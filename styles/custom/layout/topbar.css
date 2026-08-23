@@ -55,6 +55,14 @@
 
 /* Updated mobile styles for topbar.css */
 @media (max-width: 992px) {
+  /* A dark strip sitting directly above the (now white) header read as
+     "the header is dark" on a narrow screen, where it's proportionally
+     more prominent than on desktop - match the light header instead. */
+  .top-bar-wrapper {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+  }
+
   .top-bar {
     flex-direction: row;
     flex-wrap: nowrap;
@@ -62,7 +70,12 @@
     align-items: center;
     padding: 5px;
     gap: 5px;
+    color: var(--primary-color);
+  }
 
+  .extra-info .time,
+  .extra-info .exchange-rate {
+    color: var(--primary-color);
   }
 
   .app-info {

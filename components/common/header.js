@@ -267,10 +267,6 @@ const Header = () => {
                 <Link href="/contact">Contact</Link>
               </li>
               <li className="header-item flex items-center gap-2">
-                <i className="fas fa-star icon" style={{color:'var(--accent-color)'}}></i>
-                <Link href="/feedback">Feedback</Link>
-              </li>
-              <li className="header-item flex items-center gap-2">
                 <Link href="/stock-list">Browse Stock</Link>
               </li>
               <li className="header-item flex items-center gap-2">
@@ -338,13 +334,6 @@ const Header = () => {
           </ul>
 
           <ul className="right-links flex flex-col gap-4 md:flex-row md:items-center">
-
-            <li className="flex items-center gap-2">
-              <Link className="flex flex-col md:flex-row items-center" href="/feedback" onClick={() => setIsMobileMenuOpen(false)}>
-                <i className="fas fa-star icon" style={{color: 'var(--accent-color)'}}></i>
-                Feedback
-              </Link>
-            </li>
 
             {/* Help Dropdown */}
             <li

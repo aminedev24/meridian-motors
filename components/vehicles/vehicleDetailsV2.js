@@ -359,8 +359,9 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
           <span className="font-medium text-[var(--text-color)]">{carName}</span>
         </nav>
 
-        {/* Hero photo */}
-        <div className="relative overflow-hidden border border-[var(--border-color)] bg-gray-100" style={{ aspectRatio: "16 / 4.2" }}>
+        {/* Hero photo - taller on mobile (16/4.2 is a sliver on a narrow
+            screen) so the car is actually visible, wide/compact from sm: up */}
+        <div className="relative aspect-[4/3] overflow-hidden border border-[var(--border-color)] bg-gray-100 sm:aspect-[16/4.2]">
           <img
             src={galleryImages[activeImageIndex]}
             alt={`${carName} photo ${activeImageIndex + 1}`}
