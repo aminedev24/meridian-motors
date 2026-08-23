@@ -208,7 +208,9 @@ const InventoryConsole = () => {
           </button>
         </form>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr]">
+        {/* Hidden on mobile - the Make/Body Type/Budget selects above already
+            cover this, and repeating them as tiles was noise on a small screen */}
+        <div className="hidden md:grid md:grid-cols-[1.3fr_1fr_1fr]">
           {/* Shop by make */}
           <div className="border-b border-gray-200 p-4 md:border-b-0 md:border-r">
             <p className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">Shop by Make</p>

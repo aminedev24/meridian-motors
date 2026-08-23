@@ -18,7 +18,6 @@ const Header = () => {
 
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Track mobile menu state
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const dropdownRefs = useRef({});
   const headerRef = useRef(null);
   const { user, logout } = useUser();
@@ -101,22 +100,21 @@ const Header = () => {
   }
 }, [isMobileMenuOpen]);
 
+  // Mobile/desktop layout itself is pure CSS (.mobile-only/.desktop-only,
+  // .menu-toggle) so it's correct on first paint with no JS - this only
+  // needs to auto-close an open mobile menu if the viewport is resized
+  // wide enough that the desktop nav takes over instead.
   useEffect(() => {
-    const updateViewport = () => {
-      if (typeof window === 'undefined') {
-        return;
-      }
-      const isMobile = window.innerWidth < MOBILE_MENU_BREAKPOINT;
-      setIsMobileViewport(isMobile);
-      if (!isMobile) {
+    const closeIfDesktop = () => {
+      if (typeof window === 'undefined') return;
+      if (window.innerWidth >= MOBILE_MENU_BREAKPOINT) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    updateViewport();
-    window.addEventListener('resize', updateViewport);
+    window.addEventListener('resize', closeIfDesktop);
     return () => {
-      window.removeEventListener('resize', updateViewport);
+      window.removeEventListener('resize', closeIfDesktop);
     };
   }, []);
 
@@ -141,8 +139,10 @@ const Header = () => {
     };
   }, [isMobileMenuOpen]);
 
-  const mobileMenuClass =
-    !isMobileViewport || isMobileMenuOpen ? 'mobile-menu-open' : '';
+  // .header-bottom is visible by default (desktop) and hidden by CSS below
+  // the mobile breakpoint - this class only needs to re-show it once the
+  // hamburger is tapped open.
+  const mobileMenuClass = isMobileMenuOpen ? 'mobile-menu-open' : '';
 
   const renderGuestAuth = () => (
     <div className="header-item signin-item">
@@ -188,20 +188,19 @@ const Header = () => {
               </Link>
             </div>
 
-            {/* Mobile Search Input */}
-            {isMobileViewport && (
-              <div className="header-search mobile-only relative flex items-center gap-2 px-4 py-2 text-sm flex-1">
-                <input
-                  type="text"
-                  placeholder="Search by keyword..."
-                  value={searchKeyword}
-                  onChange={(e) => setSearchKeyword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="w-full bg-transparent text-sm outline-none"
-                />
-                <i className="fas fa-search search-icon" onClick={handleSearch}></i>
-              </div>
-            )}
+            {/* Mobile Search Input - always rendered, .mobile-only in CSS
+                shows/hides it so it's correct on first paint, no JS gate */}
+            <div className="header-search mobile-only relative flex items-center gap-2 px-4 py-2 text-sm flex-1">
+              <input
+                type="text"
+                placeholder="Search by keyword..."
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <i className="fas fa-search search-icon" onClick={handleSearch}></i>
+            </div>
 
             <div className="header-main-row desktop-only">
               <div className="header-search relative flex items-center gap-2 px-4 py-2 text-sm">
@@ -240,22 +239,22 @@ const Header = () => {
               </div>
             </div>
           
-            {/* Mobile Menu Toggle */}
-            {isMobileViewport && (
-              <div
-                className="menu-toggle flex h-10 w-10 items-center justify-center rounded-md border border-brand-navy/20 text-xl text-brand-navy"
-                role="button"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                aria-expanded={isMobileMenuOpen}
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? (
-                  <i className="fas fa-times"></i>
-                ) : (
-                  <i className="fas fa-bars"></i>
-                )}
-              </div>
-            )}
+            {/* Mobile Menu Toggle - .menu-toggle is display:none by default
+                and display:flex under the mobile breakpoint in CSS, so this
+                doesn't need a JS viewport gate either */}
+            <div
+              className="menu-toggle flex h-10 w-10 items-center justify-center rounded-md border border-brand-navy/20 text-xl text-brand-navy"
+              role="button"
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <i className="fas fa-times"></i>
+              ) : (
+                <i className="fas fa-bars"></i>
+              )}
+            </div>
           </div>
 
           <nav
