@@ -783,28 +783,8 @@ const StocklistV2 = () => {
             hasActiveFilters={hasActiveFilters}
           />
 
-          {/* Main column — title, filter bar, results */}
+          {/* Main column — filter bar, results */}
           <main className="min-w-0 flex-1">
-            {/* Title bar */}
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-gray-200 pb-3">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-gray-400">
-                  Stocklist
-                </p>
-                <h1 className="mt-1 text-xl font-bold uppercase tracking-wide text-brand-charcoal">
-                  Vehicles from Japan, export-ready
-                </h1>
-              </div>
-              <div className="text-right">
-                <div className="text-xl font-extrabold tracking-tight text-brand-navy">
-                  {numberFormatter.format(cars.length)}
-                </div>
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                  vehicles in stock
-                </div>
-              </div>
-            </div>
-
             {/* Top filter bar — mobile/tablet only; the sidebar covers this
                 ground on desktop (lg:), so it isn't duplicated in both places */}
             <div className="lg:hidden">
