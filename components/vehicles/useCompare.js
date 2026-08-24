@@ -3,9 +3,12 @@
 // only: comparison is an ephemeral browsing-session tool, not something that
 // needs to survive login/logout or sync across devices, so no backend calls.
 import { useCallback, useSyncExternalStore } from "react";
+import { getCarPriceUsd, normalizeCurrency } from "../utilities/ichinomiyaCardAdapter";
 
 export const MAX_COMPARE = 5;
-const STORAGE_KEY = "meridian_compare";
+// v2: snapshots now include price/currency/drive/bodyType — bumping the key
+// instead of migrating keeps pre-v2 sessions from rendering blank rows.
+const STORAGE_KEY = "meridian_compare_v2";
 
 const readInitial = () => {
   if (typeof window === "undefined") return [];
@@ -44,10 +47,16 @@ const snapshotOf = (car) => ({
   engine: car.engine_capacity || car.engineCapacity || car.cc || car.engine || "",
   fuel: car.fuel || "",
   transmission: car.transmission || "",
+  drive: car.drive || car.drive_train || "",
+  bodyType: car.category || car.body || "",
   grade: car.grade || "",
   seats: car.seats || car.seating_capacity || "",
   color: car.color || "",
   chassis: car.chassis_no || car.chassisNumber || car.chassis || "",
+  // Price uses the same fallback chain as the stock grid/detail page so the
+  // compare table can't disagree with what buyers see elsewhere.
+  price: getCarPriceUsd(car),
+  currency: normalizeCurrency(car),
   image: Array.isArray(car.images) ? car.images[0] : "",
 });
 
