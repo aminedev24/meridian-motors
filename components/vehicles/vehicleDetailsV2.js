@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
+  faExpand,
   faImages,
   faShareAlt,
   faPaperPlane,
@@ -303,6 +304,17 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
 
   const equippedItems = useMemo(() => EQUIPMENT_LIST.filter((item) => carOptions.includes(item)), [carOptions]);
 
+  // The six specs buyers scan first, surfaced in the desktop info rail
+  // (values reuse the already-cleaned ledger rows so unknowns stay hidden).
+  const quickSpecs = useMemo(
+    () =>
+      ["Year", "Mileage", "Engine", "Transmission", "Fuel", "Drive"].map((label) => ({
+        label,
+        value: ledgerRows.find((row) => row.label === label)?.value || "—",
+      })),
+    [ledgerRows]
+  );
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-[var(--background-color)]">
@@ -337,8 +349,8 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background-color)] py-2">
-      <div className="mx-auto w-full max-w-[1080px] px-4">
+    <div className="min-h-screen bg-[var(--background-color)] py-3 lg:py-6">
+      <div className="mx-auto w-full max-w-[1280px] px-4">
         {/* Breadcrumb */}
         <nav className="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-[var(--grey-text)]">
           <button onClick={() => router.push("/")} className="hover:text-[var(--primary-color)]">HOME</button>
@@ -359,9 +371,25 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
           <span className="font-medium text-[var(--text-color)]">{carName}</span>
         </nav>
 
-        {/* Hero photo - taller on mobile (16/4.2 is a sliver on a narrow
-            screen) so the car is actually visible, wide/compact from sm: up */}
-        <div className="relative aspect-[4/3] overflow-hidden border border-[var(--border-color)] bg-gray-100 sm:aspect-[16/4.2]">
+        {/* Page title row - moved out of the photo overlay so the image
+            stays clean and the name reads as a real heading */}
+        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h1 className="text-lg font-extrabold uppercase tracking-wide text-[var(--charcoal-color)] lg:text-2xl">
+            {carName}
+          </h1>
+          <span className="font-mono text-xs font-semibold text-[var(--grey-text)]">
+            Lot {displayStockId(car)}
+          </span>
+        </div>
+
+        {/* Desktop split: gallery left, sticky info rail right. Mobile keeps
+            the original stacked flow. */}
+        <div className="lg:flex lg:items-start lg:gap-5">
+          <div className="min-w-0 lg:flex-1">
+            {/* Hero photo - tall enough to actually see the car: 4/3 on
+                phones, 16/9 tablets, 16/10 desktop (the old 16/4.2 banner
+                cropped most of every photo away) */}
+            <div className="relative aspect-[4/3] overflow-hidden border border-[var(--border-color)] bg-gray-100 sm:aspect-video lg:aspect-[16/10]">
           <img
             src={galleryImages[activeImageIndex]}
             alt={`${carName} photo ${activeImageIndex + 1}`}
@@ -394,17 +422,6 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
             </div>
           )}
 
-          <h1 className="pointer-events-none absolute bottom-3 left-4 max-w-[55%] truncate text-xl font-bold uppercase text-white" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.55)" }}>
-            {carName}
-          </h1>
-
-          <button
-            onClick={() => document.getElementById("request-now-panel")?.scrollIntoView({ behavior: "smooth" })}
-            className="absolute bottom-3 right-4 z-10 flex items-center gap-2 bg-[var(--accent-color)] px-4 py-2 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg transition hover:bg-[var(--accent-color-hover)]"
-          >
-            <FontAwesomeIcon icon={faPaperPlane} /> Request Now
-          </button>
-
           {galleryImages.length > 1 && (
             <>
               <button
@@ -435,7 +452,7 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
               <button
                 key={`${img}-${i}`}
                 onClick={() => setActiveImageIndex(i)}
-                className={`h-11 w-16 shrink-0 overflow-hidden border-2 transition ${
+                className={`h-12 w-[4.5rem] shrink-0 overflow-hidden border-2 transition lg:h-16 lg:w-24 ${
                   i === activeImageIndex ? "border-[var(--primary-color)]" : "border-dashed border-gray-300 hover:border-gray-400"
                 }`}
               >
@@ -448,99 +465,119 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
         {/* Photo utility bar */}
         <div className="flex items-center gap-4 pt-1.5 text-xs text-[var(--grey-text)]">
           <span><FontAwesomeIcon icon={faImages} className="mr-1" />{galleryImages.length} photo{galleryImages.length === 1 ? "" : "s"}</span>
+          <a
+            href={galleryImages[activeImageIndex]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 transition hover:text-[var(--primary-color)]"
+          >
+            <FontAwesomeIcon icon={faExpand} /> Fullscreen
+          </a>
           <button onClick={handleShare} className="ml-auto flex items-center gap-1 transition hover:text-[var(--primary-color)]">
             <FontAwesomeIcon icon={faShareAlt} /> Share
           </button>
         </div>
+          </div>
 
-        {/* Key highlights strip */}
-        <div className="mt-2 flex flex-wrap items-center gap-2 border border-[var(--border-color)] bg-[var(--white)] px-4 py-2.5">
-          <span
-            className={`px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white ${
-              isSold ? "bg-[#a8341f]" : isReserved ? "bg-[var(--secondary-color)]" : "bg-[var(--accent-color)]"
-            }`}
-          >
-            {isSold ? "Sold" : isReserved ? "Under Negotiation" : "Available Now"}
-          </span>
-          {equippedItems.length > 0 && (
-            <span className="bg-[var(--primary-color)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-              {equippedItems.length} Features Equipped
-            </span>
-          )}
-          <span className="bg-[var(--charcoal-color)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-            Pre-Export Inspected
-          </span>
-          <span className="bg-[var(--charcoal-color)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-            Ships Worldwide
-          </span>
-          <span className="ml-auto text-xs font-semibold text-[var(--grey-text)]">
-            {isSold
-              ? "Contact us to find a similar one."
-              : isReserved
-              ? "Contact us for availability."
-              : "Ready to inspect, reserve, and ship from Japan."}
-          </span>
+          {/* Info rail - status, ticket-stub price, CTA and the six specs
+              buyers scan first; sticks beside the gallery on desktop */}
+          <aside className="mt-3 shrink-0 lg:sticky lg:top-[120px] lg:mt-0 lg:w-[400px]">
+            <div className="border border-[var(--border-color)] bg-[var(--white)] p-4">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span
+                  className={`px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white ${
+                    isSold ? "bg-[#a8341f]" : isReserved ? "bg-[var(--secondary-color)]" : "bg-[var(--accent-color)]"
+                  }`}
+                >
+                  {isSold ? "Sold" : isReserved ? "Under Negotiation" : "Available Now"}
+                </span>
+                {equippedItems.length > 0 && (
+                  <span className="bg-[var(--primary-color)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                    {equippedItems.length} Features
+                  </span>
+                )}
+                <span className="bg-[var(--charcoal-color)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+                  Inspected
+                </span>
+              </div>
+
+              {/* Ticket-stub price */}
+              <div className="flex border border-[var(--primary-color)]">
+                <div className="flex-1 py-2.5 text-center">
+                  <div className="text-[9px] font-extrabold uppercase tracking-widest text-gray-400">FOB Japan</div>
+                  {isSold || isReserved ? (
+                    <div className="font-mono text-lg font-extrabold italic leading-tight text-gray-400">Price on request</div>
+                  ) : (
+                    <div className="font-mono text-2xl font-extrabold leading-tight text-[var(--accent-color)]">{priceDisplay}</div>
+                  )}
+                </div>
+                <div
+                  className="w-2"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle, var(--white) 3px, transparent 3.1px), linear-gradient(to right, transparent calc(50% - 1px), var(--primary-color) calc(50% - 1px), var(--primary-color) calc(50% + 1px), transparent calc(50% + 1px))",
+                    backgroundSize: "8px 14px, 100% 100%",
+                    backgroundRepeat: "repeat-y, no-repeat",
+                    backgroundPosition: "center",
+                  }}
+                />
+                <div className="flex w-11 flex-col items-center justify-center gap-2.5 py-2">
+                  <button
+                    type="button"
+                    onClick={handleFavoriteClick}
+                    aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                    className={isFavorite ? "text-red-500" : "text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"}
+                  >
+                    <FontAwesomeIcon icon={faHeart} className="text-sm" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => toggleCompare(car)}
+                    disabled={!comparing && isCompareFull}
+                    aria-label={comparing ? "Remove from compare" : "Add to compare"}
+                    className={`disabled:cursor-not-allowed disabled:opacity-40 ${comparing ? "text-[var(--accent-color)]" : "text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"}`}
+                  >
+                    <FontAwesomeIcon icon={faScaleBalanced} className="text-sm" />
+                  </button>
+                  <button type="button" onClick={backToStock} aria-label="Back to stock" className="text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]">
+                    <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={() => document.getElementById("request-now-panel")?.scrollIntoView({ behavior: "smooth" })}
+                className="mt-2 flex w-full items-center justify-center gap-2 bg-[var(--accent-color)] py-2.5 text-xs font-extrabold uppercase tracking-widest text-white transition hover:bg-[var(--accent-color-hover)]"
+              >
+                <FontAwesomeIcon icon={faPaperPlane} /> Request This Vehicle
+              </button>
+
+              <div className="mt-3 grid grid-cols-2 gap-x-5 border-t border-[var(--border-color)] pt-3">
+                {quickSpecs.map((spec) => (
+                  <div key={spec.label} className="flex items-baseline justify-between gap-2 border-b border-gray-100 py-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{spec.label}</span>
+                    <span className="font-mono text-xs font-semibold text-[var(--text-color)]">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-3 text-[11px] leading-relaxed text-gray-500">
+                {isSold
+                  ? "Contact us to find a similar unit."
+                  : isReserved
+                  ? "Contact us for availability."
+                  : "Ready to inspect, reserve, and ship from Japan — pre-export inspection and worldwide RoRo / container shipping included."}
+              </p>
+            </div>
+          </aside>
         </div>
 
         <TornEdge />
 
-        {/* Price rail + ledger */}
-        <div className="flex flex-wrap items-start border border-[var(--border-color)] bg-[var(--white)]">
-          {/* Sticky price / actions - stays visible while the ledger below scrolls, per PDP best practice */}
-          <div className="w-full shrink-0 border-b border-[var(--border-color)] p-3 sm:sticky sm:top-3 sm:w-[280px] sm:border-b-0 sm:border-r">
-            {/* Ticket-stub price */}
-            <div className="flex border border-[var(--primary-color)]">
-              <div className="flex-1 py-2.5 text-center">
-                <div className="text-[9px] font-extrabold uppercase tracking-widest text-gray-400">FOB Japan</div>
-                {isSold || isReserved ? (
-                  <div className="font-mono text-lg font-extrabold italic leading-tight text-gray-400">Price on request</div>
-                ) : (
-                  <div className="font-mono text-2xl font-extrabold leading-tight text-[var(--accent-color)]">{priceDisplay}</div>
-                )}
-              </div>
-              <div
-                className="w-2"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle, var(--white) 3px, transparent 3.1px), linear-gradient(to right, transparent calc(50% - 1px), var(--primary-color) calc(50% - 1px), var(--primary-color) calc(50% + 1px), transparent calc(50% + 1px))",
-                  backgroundSize: "8px 14px, 100% 100%",
-                  backgroundRepeat: "repeat-y, no-repeat",
-                  backgroundPosition: "center",
-                }}
-              />
-              <div className="flex w-11 flex-col items-center justify-center gap-2.5 py-2">
-                <button
-                  type="button"
-                  onClick={handleFavoriteClick}
-                  aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-                  className={isFavorite ? "text-red-500" : "text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"}
-                >
-                  <FontAwesomeIcon icon={faHeart} className="text-sm" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleCompare(car)}
-                  disabled={!comparing && isCompareFull}
-                  aria-label={comparing ? "Remove from compare" : "Add to compare"}
-                  className={`disabled:cursor-not-allowed disabled:opacity-40 ${comparing ? "text-[var(--accent-color)]" : "text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]"}`}
-                >
-                  <FontAwesomeIcon icon={faScaleBalanced} className="text-sm" />
-                </button>
-                <button type="button" onClick={backToStock} aria-label="Back to stock" className="text-[var(--primary-color)] hover:text-[var(--primary-color-hover)]">
-                  <FontAwesomeIcon icon={faArrowLeft} className="text-sm" />
-                </button>
-              </div>
-            </div>
-            <button
-              onClick={() => document.getElementById("request-now-panel")?.scrollIntoView({ behavior: "smooth" })}
-              className="mt-2 flex w-full items-center justify-center gap-2 bg-[var(--accent-color)] py-2.5 text-xs font-extrabold uppercase tracking-widest text-white transition hover:bg-[var(--accent-color-hover)]"
-            >
-              <FontAwesomeIcon icon={faPaperPlane} /> Request This Vehicle
-            </button>
-          </div>
-
-          {/* Ledger */}
-          <div className="min-w-0 flex-1 p-4">
+        {/* Spec band - full ledger beside its equipment panel on desktop
+            (halves the vertical run the old stacked layout needed) */}
+        <div className="mt-3 lg:flex lg:items-start lg:gap-5">
+          <div className="min-w-0 flex-1 border border-[var(--border-color)] bg-[var(--white)] p-4">
             <h4 className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-gray-400">Manifest</h4>
             <dl>
               {ledgerRows.map((row) => (
@@ -553,9 +590,11 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
                 </div>
               ))}
             </dl>
+          </div>
 
-            <div className="mt-3 border-t border-[var(--border-color)] pt-2.5 text-xs leading-relaxed text-[var(--text-color)]">
-              {carOptions.length === 0 ? (
+          {/* Equipment & inclusions panel */}
+          <div className="mt-3 border border-[var(--border-color)] bg-[var(--white)] p-4 text-xs leading-relaxed text-[var(--text-color)] lg:mt-0 lg:w-[420px] lg:shrink-0">
+            {carOptions.length === 0 ? (
                 <span className="text-gray-500">Equipment data not available for this vehicle — contact us to confirm specific features.</span>
               ) : (
                 <>
@@ -568,21 +607,22 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
                   <span className="text-gray-500">List reflects features noted on the seller&rsquo;s inspection sheet and may not be exhaustive — contact us to confirm any specific feature.</span>
                 </>
               )}
-            </div>
 
-            <div className="mt-2.5 text-xs leading-relaxed text-[var(--text-color)]">
-              <strong className="text-[var(--charcoal-color)]">Included —</strong>
-              <span className="mt-1.5 flex flex-wrap gap-1.5 py-1">
-                <Highlight tone="primary">Pre-export inspection</Highlight>
-                <Highlight tone="primary">Export documents handled end to end</Highlight>
-                <Highlight tone="primary">Worldwide RoRo / container shipping</Highlight>
-              </span>
-            </div>
+              <div className="mt-2.5 text-xs leading-relaxed text-[var(--text-color)]">
+                <strong className="text-[var(--charcoal-color)]">Included —</strong>
+                <span className="mt-1.5 flex flex-wrap gap-1.5 py-1">
+                  <Highlight tone="primary">Pre-export inspection</Highlight>
+                  <Highlight tone="primary">Export documents handled end to end</Highlight>
+                  <Highlight tone="primary">Worldwide RoRo / container shipping</Highlight>
+                </span>
+              </div>
           </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="mt-3 mb-4 border border-amber-200 bg-amber-50 px-3">
+        <TornEdge flip />
+
+        {/* Disclaimer - slim full-width strip */}
+        <div className="mt-4 border border-amber-200 bg-amber-50 px-4">
           <WarnLine critical="excludes freight, insurance, and import duties.">
             Prices are approximate FOB Japan and
           </WarnLine>
@@ -597,10 +637,11 @@ const VehicleDetailsV2 = ({ initialVehicleId = "" }) => {
           </WarnLine>
         </div>
 
-        <TornEdge flip />
-
-        {/* Request slip */}
-        <div id="request-now-panel" className="border border-t-0 border-[var(--primary-color)] bg-[var(--white)] p-4">
+        {/* Request slip - its own full-width row so the form has room to breathe */}
+        <div
+          id="request-now-panel"
+          className="mt-4 border border-[var(--primary-color)] bg-[var(--white)] p-4 lg:p-6"
+        >
           <div className="mb-3 flex items-baseline justify-between">
             <h3 className="text-base font-bold uppercase text-[var(--primary-color)]">
               Request Slip &mdash; Lot #{displayStockId(car)}
