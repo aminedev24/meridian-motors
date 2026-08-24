@@ -280,6 +280,24 @@ const StocklistV2 = () => {
     } catch (e) {}
   }, [filters.search, initialized]);
 
+  // The one-shot initializer above only runs once per mount — so submitting
+  // the header quick-search while ALREADY on /stock-list used to be silently
+  // ignored, and the URL mirror below then stripped the fresh ?search= right
+  // back off. Keep listening for inbound ?search= changes (header search,
+  // homepage widget, footer links…) after initialization instead.
+  const urlSearch =
+    typeof router.query?.search === "string"
+      ? router.query.search
+      : Array.isArray(router.query?.search)
+      ? router.query.search[0] || ""
+      : "";
+  useEffect(() => {
+    if (!router.isReady || !initialized) return;
+    if ((urlSearch || "") === (filters.search || "")) return;
+    setFilters((prev) => ({ ...prev, search: urlSearch }));
+    setSearchInput(urlSearch);
+  }, [urlSearch, filters.search, initialized, router.isReady]);
+
   const selectedMake = filters.make;
   const selectedBodyType = filters.bodyType;
   const selectedMinPrice = filters.minPrice;
